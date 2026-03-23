@@ -1,2 +1,2 @@
-# team-tupie_kozirki
-Студенческий проект: team-tupie_kozirki
+# team-tupie-kozirki
+Студенческий проект: team-tupie-kozirki
