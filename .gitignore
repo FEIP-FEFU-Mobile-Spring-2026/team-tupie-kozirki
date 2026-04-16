@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+.gradle-user/
+build/
+*/build/
+
+# Local SDK config
+local.properties
+
+# IDE
+.idea/
+*.iml
+
+# Android Studio / captures
+captures/
+.navigation/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# APK / bundles
+*.apk
+*.aab
+
+# Generated / compiled
+*.class
+*.dex
+
+# Keep Gradle wrapper
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
