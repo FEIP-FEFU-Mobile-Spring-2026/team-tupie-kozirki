@@ -9,7 +9,7 @@
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MEGA Kazino !!!!"
+        android:text="@string/hello_android"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
