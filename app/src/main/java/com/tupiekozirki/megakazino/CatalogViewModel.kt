@@ -8,7 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 
 class CatalogViewModel(
     application: Application,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(application) {
 
     private val repository = ProductRepository(application)
@@ -35,14 +35,12 @@ class CatalogViewModel(
             finalCategories.addAll(response.categories)
 
             val savedCategoryId = savedStateHandle.get<String>(KEY_CATEGORY) ?: "cat_new"
-
             val initialProducts = filterProducts(savedCategoryId)
 
             _state.value = CatalogState.Content(
                 categories = finalCategories,
-                products = initialProducts
+                products = initialProducts,
             )
-
         } catch (e: Exception) {
             _state.value = CatalogState.Error("Ошибка: ${e.message}")
         }
@@ -55,6 +53,10 @@ class CatalogViewModel(
         if (currentState is CatalogState.Content) {
             _state.value = currentState.copy(products = filterProducts(categoryId))
         }
+    }
+
+    fun getSelectedCategoryId(): String {
+        return savedStateHandle.get<String>(KEY_CATEGORY) ?: "cat_new"
     }
 
     private fun filterProducts(categoryId: String): List<Product> {

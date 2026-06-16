@@ -2,17 +2,19 @@ package com.tupiekozirki.megakazino
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var viewModel: CatalogViewModel
     private val adapter = ProductAdapter()
 
@@ -28,11 +30,23 @@ class MainActivity : AppCompatActivity() {
         val errorLayout: LinearLayout = findViewById(R.id.errorLayout)
         val errorText: TextView = findViewById(R.id.errorText)
         val btnRetry: Button = findViewById(R.id.btnRetry)
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottomNavigation)
 
         recyclerView.adapter = adapter
 
         btnRetry.setOnClickListener {
             viewModel.loadData()
+        }
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_catalog -> true
+                R.id.nav_cart -> {
+                    Toast.makeText(this, "Корзина скоро будет!", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
         }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -72,9 +86,19 @@ class MainActivity : AppCompatActivity() {
                             tab.tag = category.id
                             tabLayout.addTab(tab)
                         }
+
+                        val savedId = viewModel.getSelectedCategoryId()
                         for (i in 0 until tabLayout.tabCount) {
-                            val tabView = (tabLayout.getChildAt(0) as android.view.ViewGroup).getChildAt(i)
-                            val p = tabView.layoutParams as android.view.ViewGroup.MarginLayoutParams
+                            if (tabLayout.getTabAt(i)?.tag == savedId) {
+                                tabLayout.getTabAt(i)?.select()
+                                break
+                            }
+                        }
+
+                        val tabStrip = tabLayout.getChildAt(0) as ViewGroup
+                        for (i in 0 until tabStrip.childCount) {
+                            val tabView = tabStrip.getChildAt(i)
+                            val p = tabView.layoutParams as ViewGroup.MarginLayoutParams
                             p.setMargins(10, 0, 10, 0)
                             tabView.requestLayout()
                         }
