@@ -4,10 +4,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 
-class CatalogViewModel(application: Application) : AndroidViewModel(application) {
+class CatalogViewModel(
+    application: Application,
+    private val savedStateHandle: SavedStateHandle
+) : AndroidViewModel(application) {
 
     private val repository = ProductRepository(application)
+
+    private val KEY_CATEGORY = "selected_category_id"
 
     private val _state = MutableLiveData<CatalogState>(CatalogState.Loading)
     val state: LiveData<CatalogState> = _state
@@ -20,36 +26,42 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
 
     fun loadData() {
         _state.value = CatalogState.Loading
-
         try {
             val response = repository.getCatalog()
             allProducts = response.items
 
             val newCategory = Category(id = "cat_new", name = "Новинки")
-
             val finalCategories = mutableListOf(newCategory)
             finalCategories.addAll(response.categories)
 
-            val newProducts = allProducts.filter { it.tags.contains("New") }
+            val savedCategoryId = savedStateHandle.get<String>(KEY_CATEGORY) ?: "cat_new"
+
+            val initialProducts = filterProducts(savedCategoryId)
+
             _state.value = CatalogState.Content(
                 categories = finalCategories,
-                products = newProducts
+                products = initialProducts
             )
 
         } catch (e: Exception) {
-            _state.value = CatalogState.Error("Ошибка загрузки данных: ${e.message}")
+            _state.value = CatalogState.Error("Ошибка: ${e.message}")
         }
     }
 
     fun filterByCategory(categoryId: String) {
+        savedStateHandle[KEY_CATEGORY] = categoryId
+
         val currentState = _state.value
         if (currentState is CatalogState.Content) {
-            val filteredProducts = if (categoryId == "cat_new") {
-                allProducts.filter { it.tags.contains("New") }
-            } else {
-                allProducts.filter { it.categoryId == categoryId }
-            }
-            _state.value = currentState.copy(products = filteredProducts)
+            _state.value = currentState.copy(products = filterProducts(categoryId))
+        }
+    }
+
+    private fun filterProducts(categoryId: String): List<Product> {
+        return if (categoryId == "cat_new") {
+            allProducts.filter { it.tags.contains("New") }
+        } else {
+            allProducts.filter { it.categoryId == categoryId }
         }
     }
 }
