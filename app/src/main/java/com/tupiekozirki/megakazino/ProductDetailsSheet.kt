@@ -47,32 +47,35 @@ class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragm
             }
         }
 
-        val sizeGroup = view.findViewById<ChipGroup>(R.id.sizeGroup)
-        sizeGroup.isSelectionRequired = true
 
-        product.sizes.forEach { size ->
+        val tagGroup = view.findViewById<ChipGroup>(R.id.tagGroup)
+        tagGroup.removeAllViews()
+
+        product.tags.forEach { tagName ->
             val chip = Chip(requireContext()).apply {
-                text = size.name
-                isCheckable = true
-                isCheckedIconVisible = false
-                chipBackgroundColor = ContextCompat.getColorStateList(requireContext(), R.color.size_chip_background)
-                setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.size_text_selector))
-
+                text = tagName
+                chipMinHeight = 24f
+                textSize = 10f
+                chipBackgroundColor = ContextCompat.getColorStateList(requireContext(), R.color.light_beige)
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.brand_brown))
                 chipStrokeWidth = 0f
-
-                setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        selectedSize = size.name
-                    }
-                }
+                isClickable = false
+                isCheckable = false
             }
-            sizeGroup.addView(chip)
+            tagGroup.addView(chip)
         }
 
         view.findViewById<ImageButton>(R.id.btnInfo).setOnClickListener {
+            val info = """
+                Материал: ${product.material}
+                Вес: ${product.weight}
+                Сезон: ${product.season}
+                Страна производства: ${product.countryOfOrigin}
+            """.trimIndent()
+
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Характеристики")
-                .setMessage("Материал: ${product.material}\nСтрана: ${product.countryOfOrigin}")
+                .setMessage(info)
                 .setPositiveButton("Ок", null)
                 .show()
         }
