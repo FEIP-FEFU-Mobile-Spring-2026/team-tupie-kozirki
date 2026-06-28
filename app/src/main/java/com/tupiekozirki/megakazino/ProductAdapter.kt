@@ -9,9 +9,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
 class ProductAdapter(private val onItemClick: (Product) -> Unit) :
     ListAdapter<Product, ProductAdapter.ProductViewHolder>(ProductDiffCallback()) {
@@ -41,19 +38,13 @@ class ProductAdapter(private val onItemClick: (Product) -> Unit) :
         fun bind(product: Product) {
             productName.text = product.name
             productDescription.text = product.shortDescription
+            productPrice.text = product.priceInKopecks.toRubles()
 
             productImage.load(product.imageUrl) {
                 crossfade(true)
-                placeholder(android.R.color.darker_gray)
-                error(android.R.drawable.ic_menu_report_image)
+                placeholder(R.drawable.ic_product_placeholder)
+                error(R.drawable.ic_product_placeholder)
             }
-            val rubles = product.priceInKopecks / 100
-            val symbols =
-                DecimalFormatSymbols(Locale.getDefault()).apply {
-                    groupingSeparator = ' '
-                }
-            val formatter = DecimalFormat("#,###", symbols)
-            productPrice.text = "${formatter.format(rubles)} ₽"
         }
     }
 

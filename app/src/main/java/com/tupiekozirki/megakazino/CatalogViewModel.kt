@@ -73,7 +73,7 @@ class CatalogViewModel(
     }
 
     fun getSelectedCategoryId(): String {
-        return savedStateHandle.get<String>(keyCategory) ?: NEW_CATEGORY_ID
+        return savedStateHandle.get<String>(keyCategory) ?: CatalogConstants.NEW_CATEGORY_ID
     }
 
     private fun showCatalog(
@@ -83,16 +83,10 @@ class CatalogViewModel(
     ) {
         allProducts = response.items
 
-        val categories =
-            buildList {
-                add(Category(id = NEW_CATEGORY_ID, name = "Новинки"))
-                addAll(response.categories)
-            }
-
-        val savedCategoryId = savedStateHandle.get<String>(keyCategory) ?: NEW_CATEGORY_ID
+        val savedCategoryId = savedStateHandle.get<String>(keyCategory) ?: CatalogConstants.NEW_CATEGORY_ID
         _state.value =
             CatalogState.Content(
-                categories = categories,
+                categories = withNewCategory(response.categories),
                 products = filterProducts(savedCategoryId),
                 isRefreshing = isRefreshing,
                 isOffline = isOffline,
@@ -100,14 +94,6 @@ class CatalogViewModel(
     }
 
     private fun filterProducts(categoryId: String): List<Product> {
-        return if (categoryId == NEW_CATEGORY_ID) {
-            allProducts.filter { it.tags.contains("New") }
-        } else {
-            allProducts.filter { it.categoryId == categoryId }
-        }
-    }
-
-    companion object {
-        private const val NEW_CATEGORY_ID = "cat_new"
+        return filterProductsByCategory(allProducts, categoryId)
     }
 }
