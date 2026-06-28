@@ -2,4 +2,15 @@
 <resources>
     <string name="app_name">MEGA Kazino</string>
     <string name="hello_android" translatable="false">MEGA Kazino!!!!!</string>
+    <string name="cart_title">Корзина</string>
+    <string name="cart_empty">Корзина пуста</string>
+    <string name="cart_total">Итого</string>
+    <string name="checkout">Оформить</string>
+    <string name="name_hint">Имя*</string>
+    <string name="email_hint">Почта*</string>
+    <string name="comment_hint">Комментарий к заказу</string>
+    <string name="clear_cart">Очистить корзину</string>
+    <string name="remove_cart_item">Удалить позицию</string>
+    <string name="increase_quantity">Увеличить количество</string>
+    <string name="decrease_quantity">Уменьшить количество</string>
 </resources>
