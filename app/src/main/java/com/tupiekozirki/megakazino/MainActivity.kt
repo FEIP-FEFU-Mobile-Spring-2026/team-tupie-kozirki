@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
             showProductDetails(product)
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -52,16 +54,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                val categoryId = tab?.tag as? String
-                if (categoryId != null) {
-                    viewModel.filterByCategory(categoryId)
+        tabLayout.addOnTabSelectedListener(
+            object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    val categoryId = tab?.tag as? String
+                    if (categoryId != null) {
+                        viewModel.filterByCategory(categoryId)
+                    }
                 }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+                override fun onTabReselected(tab: TabLayout.Tab?) {}
+            },
+        )
 
         viewModel.state.observe(this) { state ->
             when (state) {
@@ -77,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                     errorText.text = state.message
                 }
                 is CatalogState.Content -> {
-                    progressBar.visibility = View.GONE
+                    progressBar.visibility = if (state.isRefreshing) View.VISIBLE else View.GONE
                     errorLayout.visibility = View.GONE
                     recyclerView.visibility = View.VISIBLE
 
@@ -106,10 +112,21 @@ class MainActivity : AppCompatActivity() {
                             tabView.requestLayout()
                         }
                     }
+
+                    if (state.isOffline) {
+                        Snackbar.make(
+                            recyclerView,
+                            "Нет сети. Показан сохраненный каталог.",
+                            Snackbar.LENGTH_LONG,
+                        ).setAction("Повторить") {
+                            viewModel.loadData()
+                        }.show()
+                    }
                 }
             }
         }
     }
+
     private fun showProductDetails(product: Product) {
         val sheet = ProductDetailsSheet(product)
         sheet.show(supportFragmentManager, "ProductDetails")

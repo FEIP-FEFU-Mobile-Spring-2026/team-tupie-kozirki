@@ -2,17 +2,17 @@ package com.tupiekozirki.megakazino
 
 data class CatalogResponse(
     val categories: List<Category>,
-    val items: List<Product>
+    val items: List<Product>,
 )
 
 data class Category(
     val id: String,
-    val name: String
+    val name: String,
 )
 
 data class Size(
     val id: String,
-    val name: String
+    val name: String,
 )
 
 data class Product(
@@ -28,5 +28,5 @@ data class Product(
     val material: String,
     val weight: String,
     val season: String,
-    val countryOfOrigin: String
+    val countryOfOrigin: String,
 )
