@@ -37,6 +37,16 @@ data class ProductEntity(
     val countryOfOrigin: String,
 )
 
+@Entity(
+    tableName = "cart_items",
+    primaryKeys = ["productId", "sizeId"],
+)
+data class CartItemEntity(
+    val productId: String,
+    val sizeId: String,
+    val quantity: Int,
+)
+
 @Dao
 interface CatalogDao {
     @Query("SELECT * FROM categories")
@@ -45,17 +55,79 @@ interface CatalogDao {
     @Query("SELECT * FROM products")
     fun getProducts(): List<ProductEntity>
 
+    @Query("SELECT * FROM cart_items")
+    fun getCartItems(): List<CartItemEntity>
+
+    @Query("SELECT COALESCE(SUM(quantity), 0) FROM cart_items")
+    fun getCartQuantity(): Int
+
     @Query("DELETE FROM categories")
     fun clearCategories()
 
     @Query("DELETE FROM products")
     fun clearProducts()
 
+    @Query("DELETE FROM cart_items")
+    fun clearCart()
+
+    @Query("DELETE FROM cart_items WHERE productId = :productId AND sizeId = :sizeId")
+    fun removeCartItem(
+        productId: String,
+        sizeId: String,
+    )
+
+    @Query("UPDATE cart_items SET quantity = quantity + 1 WHERE productId = :productId AND sizeId = :sizeId")
+    fun incrementCartItem(
+        productId: String,
+        sizeId: String,
+    ): Int
+
+    @Query("UPDATE cart_items SET quantity = quantity - 1 WHERE productId = :productId AND sizeId = :sizeId")
+    fun decrementCartItem(
+        productId: String,
+        sizeId: String,
+    )
+
+    @Query("DELETE FROM cart_items WHERE productId = :productId AND sizeId = :sizeId AND quantity <= 0")
+    fun deleteEmptyCartItem(
+        productId: String,
+        sizeId: String,
+    )
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCategories(categories: List<CategoryEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProducts(products: List<ProductEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCartItem(cartItem: CartItemEntity)
+
+    @Transaction
+    fun addCartItem(
+        productId: String,
+        sizeId: String,
+    ) {
+        val updatedRows = incrementCartItem(productId, sizeId)
+        if (updatedRows == 0) {
+            insertCartItem(
+                CartItemEntity(
+                    productId = productId,
+                    sizeId = sizeId,
+                    quantity = 1,
+                ),
+            )
+        }
+    }
+
+    @Transaction
+    fun decreaseCartItem(
+        productId: String,
+        sizeId: String,
+    ) {
+        decrementCartItem(productId, sizeId)
+        deleteEmptyCartItem(productId, sizeId)
+    }
 
     @Transaction
     fun replaceCatalog(
@@ -70,8 +142,8 @@ interface CatalogDao {
 }
 
 @Database(
-    entities = [CategoryEntity::class, ProductEntity::class],
-    version = 1,
+    entities = [CategoryEntity::class, ProductEntity::class, CartItemEntity::class],
+    version = 2,
     exportSchema = false,
 )
 abstract class CatalogDatabase : RoomDatabase() {
@@ -87,7 +159,7 @@ abstract class CatalogDatabase : RoomDatabase() {
                     context.applicationContext,
                     CatalogDatabase::class.java,
                     "catalog.db",
-                ).build().also { instance = it }
+                ).fallbackToDestructiveMigration().build().also { instance = it }
             }
         }
     }

@@ -16,8 +16,11 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragment() {
-    private var selectedSize: String? = null
+class ProductDetailsSheet(
+    private val product: Product,
+    private val onAddToCart: (Product, Size) -> Unit,
+) : BottomSheetDialogFragment() {
+    private var selectedSize: Size? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +40,6 @@ class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragm
         view.findViewById<TextView>(R.id.detailsName).text = product.name
         view.findViewById<TextView>(R.id.detailsDescription).text = product.longDescription
 
-        // теги динамические
         val tagGroup = view.findViewById<ChipGroup>(R.id.tagGroup)
         tagGroup.removeAllViews()
         product.tags.forEach { tagName ->
@@ -54,7 +56,6 @@ class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragm
             tagGroup.addView(chip)
         }
 
-        // размеры
         val sizeGroup = view.findViewById<ChipGroup>(R.id.sizeGroup)
         sizeGroup.removeAllViews()
         product.sizes.forEach { size ->
@@ -67,13 +68,14 @@ class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragm
                     setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.size_text_selector))
                     chipStrokeWidth = 0f
                     setOnCheckedChangeListener { _, isChecked ->
-                        if (isChecked) selectedSize = size.name
+                        if (isChecked) {
+                            selectedSize = size
+                        }
                     }
                 }
             sizeGroup.addView(chip)
         }
 
-        // 4 характеристики инфо-кнопки
         view.findViewById<ImageButton>(R.id.btnInfo).setOnClickListener {
             val info =
                 """
@@ -90,17 +92,16 @@ class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragm
                 .show()
         }
 
-        // кнопка корзины и цена
-        val rubles = product.priceInKopecks / 100
-        val priceFormatted = String.format("%,d ₽", rubles).replace(',', ' ')
         val btnAdd = view.findViewById<Button>(R.id.btnAddToCart)
-        btnAdd.text = "В корзину · $priceFormatted"
+        btnAdd.text = "В корзину · ${product.priceInKopecks.toRubles()}"
 
         btnAdd.setOnClickListener {
-            if (selectedSize == null) {
+            val size = selectedSize
+            if (size == null) {
                 Toast.makeText(requireContext(), "Выберите размер", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(requireContext(), "Добавлено!", Toast.LENGTH_SHORT).show()
+                onAddToCart(product, size)
+                Toast.makeText(requireContext(), "Добавлено в корзину", Toast.LENGTH_SHORT).show()
                 dismiss()
             }
         }
