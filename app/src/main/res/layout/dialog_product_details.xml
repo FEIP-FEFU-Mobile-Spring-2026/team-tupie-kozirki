@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:background="@android:color/white">
 
-    <!-- Индикатор свайпа сверху -->
+    <!-- индикатор свайпа сверху -->
     <View
         android:id="@+id/dragHandle"
         android:layout_width="40dp"
@@ -33,23 +33,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="20dp">
 
-            <!-- Тэг NEW -->
-            <TextView
-                android:id="@+id/tagNew"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:background="@drawable/bg_price_tag"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:text="NEW"
-                android:textColor="#8D6E63"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:elevation="2dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+            <!-- Картинка -->
             <ImageView
                 android:id="@+id/detailsImage"
                 android:layout_width="match_parent"
@@ -58,6 +42,17 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@tools:sample/backgrounds/scenic" />
 
+            <!-- теги -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/tagGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:chipSpacingHorizontal="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- название и инфо -->
             <TextView
                 android:id="@+id/detailsName"
                 android:layout_width="0dp"
@@ -72,20 +67,21 @@
                 app:layout_constraintTop_toBottomOf="@id/detailsImage"
                 tools:text="Кожаные лоферы" />
 
-            <!-- Кнопка Инфо (i) -->
             <ImageButton
                 android:id="@+id/btnInfo"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/bg_price_tag"
                 android:padding="8dp"
                 android:src="@android:drawable/ic_dialog_info"
+                android:contentDescription="Характеристики товара"
                 app:layout_constraintBottom_toBottomOf="@id/detailsName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/detailsName"
                 app:tint="#8D6E63" />
 
+            <!-- Описание -->
             <TextView
                 android:id="@+id/detailsDescription"
                 android:layout_width="match_parent"
@@ -96,18 +92,30 @@
                 android:textSize="14sp"
                 android:lineSpacingExtra="4dp"
                 app:layout_constraintTop_toBottomOf="@id/detailsName"
-                tools:text="Описание товара из макета figma..." />
+                tools:text="Описание товара..." />
 
-            <!-- Группа размеров -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/tagGroup"
-                android:layout_width="0dp"
+            <!-- размеры -->
+            <TextView
+                android:id="@+id/labelSize"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:chipSpacingHorizontal="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="24dp"
+                android:text="Выберите размер"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/detailsDescription" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/sizeGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="12dp"
+                app:chipSpacingHorizontal="8dp"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:layout_constraintTop_toBottomOf="@id/labelSize" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
