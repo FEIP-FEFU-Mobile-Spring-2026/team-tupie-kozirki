@@ -13,14 +13,19 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-class ProductAdapter : ListAdapter<Product, ProductAdapter.ProductViewHolder>(ProductDiffCallback()) {
+class ProductAdapter(private val onItemClick: (Product) -> Unit) :
+    ListAdapter<Product, ProductAdapter.ProductViewHolder>(ProductDiffCallback()) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product, parent, false)
         return ProductViewHolder(view)
+
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val product = getItem(position)
+        holder.bind(product)
+        holder.itemView.setOnClickListener { onItemClick(product) }
     }
 
     class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {

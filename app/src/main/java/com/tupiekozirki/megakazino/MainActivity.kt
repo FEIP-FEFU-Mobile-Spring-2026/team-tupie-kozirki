@@ -16,8 +16,11 @@ import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: CatalogViewModel
-    private val adapter = ProductAdapter()
-
+    private val adapter by lazy {
+        ProductAdapter { product ->
+            showProductDetails(product)
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -106,5 +109,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    private fun showProductDetails(product: Product) {
+        val sheet = ProductDetailsSheet(product)
+        sheet.show(supportFragmentManager, "ProductDetails")
     }
 }
