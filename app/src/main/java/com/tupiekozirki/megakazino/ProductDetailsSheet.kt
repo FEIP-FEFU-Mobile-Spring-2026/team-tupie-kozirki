@@ -17,14 +17,20 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragment() {
-
     private var selectedSize: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
         return inflater.inflate(R.layout.dialog_product_details, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<ImageView>(R.id.detailsImage).load(product.imageUrl)
@@ -35,15 +41,16 @@ class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragm
         val tagGroup = view.findViewById<ChipGroup>(R.id.tagGroup)
         tagGroup.removeAllViews()
         product.tags.forEach { tagName ->
-            val chip = Chip(requireContext()).apply {
-                text = tagName
-                chipMinHeight = 24f
-                textSize = 10f
-                chipBackgroundColor = ContextCompat.getColorStateList(requireContext(), R.color.light_beige)
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.brand_brown))
-                chipStrokeWidth = 0f
-                isClickable = false
-            }
+            val chip =
+                Chip(requireContext()).apply {
+                    text = tagName
+                    chipMinHeight = 24f
+                    textSize = 10f
+                    chipBackgroundColor = ContextCompat.getColorStateList(requireContext(), R.color.light_beige)
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.brand_brown))
+                    chipStrokeWidth = 0f
+                    isClickable = false
+                }
             tagGroup.addView(chip)
         }
 
@@ -51,28 +58,30 @@ class ProductDetailsSheet(private val product: Product) : BottomSheetDialogFragm
         val sizeGroup = view.findViewById<ChipGroup>(R.id.sizeGroup)
         sizeGroup.removeAllViews()
         product.sizes.forEach { size ->
-            val chip = Chip(requireContext()).apply {
-                text = size.name
-                isCheckable = true
-                isCheckedIconVisible = false
-                chipBackgroundColor = ContextCompat.getColorStateList(requireContext(), R.color.size_chip_background)
-                setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.size_text_selector))
-                chipStrokeWidth = 0f
-                setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) selectedSize = size.name
+            val chip =
+                Chip(requireContext()).apply {
+                    text = size.name
+                    isCheckable = true
+                    isCheckedIconVisible = false
+                    chipBackgroundColor = ContextCompat.getColorStateList(requireContext(), R.color.size_chip_background)
+                    setTextColor(ContextCompat.getColorStateList(requireContext(), R.color.size_text_selector))
+                    chipStrokeWidth = 0f
+                    setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) selectedSize = size.name
+                    }
                 }
-            }
             sizeGroup.addView(chip)
         }
 
         // 4 характеристики инфо-кнопки
         view.findViewById<ImageButton>(R.id.btnInfo).setOnClickListener {
-            val info = """
+            val info =
+                """
                 Материал: ${product.material}
                 Вес: ${product.weight}
                 Сезон: ${product.season}
                 Страна производства: ${product.countryOfOrigin}
-            """.trimIndent()
+                """.trimIndent()
 
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Характеристики")

@@ -15,14 +15,18 @@ import java.util.Locale
 
 class ProductAdapter(private val onItemClick: (Product) -> Unit) :
     ListAdapter<Product, ProductAdapter.ProductViewHolder>(ProductDiffCallback()) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ProductViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product, parent, false)
         return ProductViewHolder(view)
-
     }
 
-    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ProductViewHolder,
+        position: Int,
+    ) {
         val product = getItem(position)
         holder.bind(product)
         holder.itemView.setOnClickListener { onItemClick(product) }
@@ -44,20 +48,27 @@ class ProductAdapter(private val onItemClick: (Product) -> Unit) :
                 error(android.R.drawable.ic_menu_report_image)
             }
             val rubles = product.priceInKopecks / 100
-            val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-                groupingSeparator = ' '
-            }
+            val symbols =
+                DecimalFormatSymbols(Locale.getDefault()).apply {
+                    groupingSeparator = ' '
+                }
             val formatter = DecimalFormat("#,###", symbols)
             productPrice.text = "${formatter.format(rubles)} ₽"
         }
     }
 
     class ProductDiffCallback : DiffUtil.ItemCallback<Product>() {
-        override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
+        override fun areItemsTheSame(
+            oldItem: Product,
+            newItem: Product,
+        ): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
+        override fun areContentsTheSame(
+            oldItem: Product,
+            newItem: Product,
+        ): Boolean {
             return oldItem == newItem
         }
     }
