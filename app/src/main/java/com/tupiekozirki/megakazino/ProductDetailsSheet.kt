@@ -36,7 +36,11 @@ class ProductDetailsSheet(
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<ImageView>(R.id.detailsImage).load(product.imageUrl)
+        view.findViewById<ImageView>(R.id.detailsImage).load(product.imageUrl) {
+            crossfade(true)
+            placeholder(R.drawable.ic_product_placeholder)
+            error(R.drawable.ic_product_placeholder)
+        }
         view.findViewById<TextView>(R.id.detailsName).text = product.name
         view.findViewById<TextView>(R.id.detailsDescription).text = product.longDescription
 

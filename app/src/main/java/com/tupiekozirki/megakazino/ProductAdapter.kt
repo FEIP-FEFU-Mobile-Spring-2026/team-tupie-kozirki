@@ -42,8 +42,8 @@ class ProductAdapter(private val onItemClick: (Product) -> Unit) :
 
             productImage.load(product.imageUrl) {
                 crossfade(true)
-                placeholder(android.R.color.darker_gray)
-                error(android.R.drawable.ic_menu_report_image)
+                placeholder(R.drawable.ic_product_placeholder)
+                error(R.drawable.ic_product_placeholder)
             }
         }
     }

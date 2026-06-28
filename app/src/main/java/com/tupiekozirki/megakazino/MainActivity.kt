@@ -12,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.util.PatternsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -122,6 +121,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         checkoutButton.setOnClickListener {
+            if (!validateOrderForm()) {
+                return@setOnClickListener
+            }
+
             cartRepository.clear {
                 refreshCart()
                 MaterialAlertDialogBuilder(this)
@@ -270,7 +273,7 @@ class MainActivity : AppCompatActivity() {
             cartEmptyText.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
             cartRecyclerView.visibility = if (items.isEmpty()) View.GONE else View.VISIBLE
             orderForm.visibility = if (items.isEmpty()) View.GONE else View.VISIBLE
-            cartTotalText.text = items.sumOf { it.totalPriceInKopecks }.toRubles()
+            cartTotalText.text = calculateCartTotal(items).toRubles()
             updateCheckoutState()
             updateCartBadge(quantity)
         }
@@ -283,8 +286,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCheckoutState() {
-        val hasName = customerNameInput.text.toString().trim().isNotEmpty()
-        val hasEmail = PatternsCompat.EMAIL_ADDRESS.matcher(customerEmailInput.text.toString().trim()).matches()
-        checkoutButton.isEnabled = hasName && hasEmail && hasCartItems
+        checkoutButton.isEnabled = hasCartItems
+    }
+
+    private fun validateOrderForm(): Boolean {
+        customerNameInput.error = null
+        customerEmailInput.error = null
+
+        val name = customerNameInput.text.toString()
+        val email = customerEmailInput.text.toString()
+
+        if (name.trim().isEmpty()) {
+            customerNameInput.error = "Введите имя"
+            customerNameInput.requestFocus()
+            return false
+        }
+
+        if (!isValidOrderForm(name = name, email = email, hasCartItems = true)) {
+            customerEmailInput.error = "Введите корректную почту"
+            customerEmailInput.requestFocus()
+            return false
+        }
+
+        return true
     }
 }
